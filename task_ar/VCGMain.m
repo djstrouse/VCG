@@ -1,0 +1,254 @@
+% VCG study -- Main program
+% Nov. 2014 
+% DJ Strouse
+% Angela Radulescu
+
+function [] = VGCMain()
+
+clear all;
+
+addpath('/Applications/Psychtoolbox/PsychBasic');
+addpath('/Applications/Psychtoolbox/PsychOneliners');
+addpath('/Applications/Psychtoolbox/PsychPriority');
+addpath('/Applications/Psychtoolbox/PsychJava');
+addpath('/Applications/Psychtoolbox/PsychAlphaBlending');
+addpath('/Applications/Psychtoolbox/PsychSound');
+
+retina = input('Are you running this on a retina laptop? (1=yes, 0=no) = ');
+% skip sink tests (so that I can develop on the retina MacBook)
+if retina
+    Screen('Preference', 'SkipSyncTests', 1);
+end
+
+% valid keys 
+Keys.Task = [KbName('1!')  KbName('2@') KbName('3#') KbName('4$') KbName('5%')];
+Keys.Quit = [KbName('q')];
+
+%% PARAMETERS 
+
+% ------- QUIZ ------- %
+
+% create data dir if it does not exist yet
+if exist('dataQ', 'dir') == 0
+    mkdir('dataQ')
+end
+
+ParmsQ.NQuestions = 30;   % number of questions
+
+% Instructions
+ParmsQ.Instructions = 1;
+
+% Timing 
+ParmsQ.Timeout = 2.5;          
+ParmsQ.OutcomeTime = 1;        
+ParmsQ.StimTime = 0.5;
+ParmsQ.ITImax = 2;              
+ParmsQ.ITImin = 1;
+ParmsQ.ITI = 1.5;
+ParmsQ.ISI = 0.3;         
+
+% % ------- PSYCHOPHYSICS ------- %
+% 
+% % create data dir if it does not exist yet
+% if exist('dataT', 'dir') == 0
+%     mkdir('dataT')
+% end
+% 
+% % Timing 
+% ParmsT.Timeout = 2.5;          
+% ParmsT.OutcomeTime = 1;        
+% ParmsT.StimTime = 0.5;
+% ParmsT.ITImax = 2;              
+% ParmsT.ITImin = 1;
+% ParmsT.ITI = 1.5;
+% ParmsT.ISI = 0.3; 
+
+%% Run experiments
+
+% get input from experimenter -- subject number and routine combination
+SubjectNum = input('Please enter subject number: ');
+ParmsQ.SubjectNum = SubjectNum;
+
+Q = input('Give quiz? (1=yes, 0=no) = ');
+if ~numel(Q)
+    Q = 0;
+end
+
+T = input('Run task? (1=yes, 0=no) = ');
+if ~numel(T)
+    T = 0;
+end
+
+if Q+T == 0
+   error('Please select at least one experiment!')
+end
+
+% make random seed different each time (mt19937ar is the name of the algorithm that matlab
+% uses; type 'doc randstream' for others)
+s = RandStream.create('mt19937ar','seed',sum(100*clock));
+RandStream.setGlobalStream(s);
+tSave = fix(clock);              % to use as a timestamp for saving later
+
+% open window 
+[windowmain, rect] = Screen('OpenWindow',0,[0 0 0]); % on black 
+Screen('TextFont', windowmain, 'Courier New');
+Screen('TextSize',windowmain,40);
+HideCursor;
+% Priority(9);
+
+% welcome message
+tstring = sprintf('Welcome and thank you for \n participating in this experiment! \n\n Please press any key to continue.');
+DrawFormattedText(windowmain,tstring,'center','center',[255 255 255]);
+Screen('Flip',windowmain);
+KbWait(-1); 
+WaitSecs(0.5);
+
+% running the quiz
+if Q
+    if ParmsQ.Instructions 
+        QuizInstructions(windowmain,ParmsQ)
+    end
+    % GiveQuiz();     
+end
+
+Screen('CloseAll');
+ShowCursor;
+   
+    
+end
+
+function [] = QuizInstructions(windowmain,Parms)
+        
+tstring = sprintf('In this experiment, \n we will give you a quiz \n\n\n Press any key to continue.');
+DrawFormattedText(windowmain,tstring,'center','center',[255 255 255],70);
+Screen('Flip',windowmain);
+KbWait(-1); 
+WaitSecs(0.5);        
+   
+
+
+end
+
+
+function [] = GiveQuiz()
+    
+%% administer prequiz
+GivePreQuiz(3); clc;
+disp('Great job! We will now start the real quiz. Are you ready?')
+pause
+disp(' ')
+
+%% administer pop quiz
+GivePopQuiz(subjID); clc;
+disp('Finished with population questions! Ready for the area quiz?')
+pause
+disp(' ')
+
+%% administer area quiz
+GiveAreaQuiz(subjID); clc;
+disp('Phew! Done with the difficult questions. Just a little more info before you go...')
+pause
+disp(' ')
+
+%% subject survey
+SurveySubject(subjID);
+
+%% calculate scores
+% CalcScores(subjID);
+disp(' ')
+disp('Finished!')
+disp(' ')
+
+end
+    
+function [] = GivePreQuiz(Nrep)
+% Delivers a prequiz on populations/area of countries to prepare subjects
+% for the real experiment.
+%
+% Written by: DJ Strouse
+% Last updated: July 18, 2013 by DJ Strouse
+%
+% INPUTS
+% Nrep [=] positive integer = number of reps for both pop and area
+%
+% OUTPUTS
+% none
+
+% init
+load('data/quiz.mat');
+
+% administer pop prequiz
+disp(' ')
+disp('POPULATION PREQUIZ')
+disp(' ')
+feedback = zeros(Nrep,1);
+for n = 1:Nrep
+  clc
+  N = length(SubSampedCountry);
+  tmp = randperm(N,2);
+  x1 = tmp(1);
+  x2 = tmp(2); clear N tmp;
+  disp('Larger population:')
+  disp(['1: ',SubSampedCountry{x1}])
+  disp('OR')
+  disp(['2: ',SubSampedCountry{x2}])
+  disp('?')
+  answer = input('Choose 1 or 2 by speaking: ');
+    % @(x) (x==1)||(x==2));
+  if SubSampedPopulation(x1)>SubSampedPopulation(x2)
+    key = 1;
+  else
+    key = 2;
+  end
+  feedback(n) = answer==key; clear answer key x1 x2;
+  conf = input('Place your bet from 1 (lowest confidence) to 5 (highest confidence) by typing: ');
+    % @(x) (x==1)||(x==2)||(x==3)||(x==4)||(x==5)); clear conf;
+  disp(' ')
+end
+clear n;
+disp(sprintf('You answered %i of the last %i questions correctly.',sum(feedback),Nrep))
+disp('Press any key to continue with the quiz.')
+pause
+clear feedback;
+
+% administer area prequiz
+disp(' ')
+disp('AREA PREQUIZ')
+disp(' ')
+feedback = zeros(Nrep,1);
+for n = 1:Nrep
+  clc
+  N = length(SubSampedCountry);
+  tmp = randperm(N,2);
+  x1 = tmp(1);
+  x2 = tmp(2); clear N tmp;
+  disp('Larger area:')
+  disp(['1: ',SubSampedCountry{x1}])
+  disp('OR')
+  disp(['2: ',SubSampedCountry{x2}])
+  disp('?')
+  answer = inputv(...
+    'Choose 1 or 2 by speaking: ',...
+    @(x) (x==1)||(x==2));
+  if SubSampedLandAreakm2(x1)>SubSampedLandAreakm2(x2)
+    key = 1;
+  else
+    key = 2;
+  end
+  feedback(n) = answer==key; clear answer key x1 x2;
+  conf = inputv(...
+    'Place your bet from 1 (lowest confidence) to 5 (highest confidence) by typing: ',...
+    @(x) (x==1)||(x==2)||(x==3)||(x==4)||(x==5)); clear conf;
+  disp(' ')
+end
+clear n;
+disp(sprintf('You answered %i of the last %i questions correctly.',sum(feedback),Nrep))
+disp('Press any key to continue with the quiz.')
+pause
+clear feedback;
+
+end
+
+    
+    
+    

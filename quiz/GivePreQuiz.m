@@ -30,18 +30,16 @@ for n = 1:Nrep
   disp('OR')
   disp(['2: ',SubSampedCountry{x2}])
   disp('?')
-  answer = inputv(...
-    'Choose 1 or 2 by speaking: ',...
-    @(x) (x==1)||(x==2));
+  answer = input('Choose 1 or 2 by speaking: ');
+    % @(x) (x==1)||(x==2));
   if SubSampedPopulation(x1)>SubSampedPopulation(x2)
     key = 1;
   else
     key = 2;
   end
   feedback(n) = answer==key; clear answer key x1 x2;
-  conf = inputv(...
-    'Place your bet from 1 (lowest confidence) to 5 (highest confidence) by typing: ',...
-    @(x) (x==1)||(x==2)||(x==3)||(x==4)||(x==5)); clear conf;
+  conf = input('Place your bet from 1 (lowest confidence) to 5 (highest confidence) by typing: ');
+    % @(x) (x==1)||(x==2)||(x==3)||(x==4)||(x==5)); clear conf;
   disp(' ')
 end
 clear n;
