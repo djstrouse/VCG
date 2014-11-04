@@ -21,8 +21,7 @@ if retina
 end
 
 % valid keys 
-Keys.Task = [KbName('1!')  KbName('2@') KbName('3#') KbName('4$') KbName('5%')];
-Keys.Quit = [KbName('q')];
+Keys = [KbName('1!')  KbName('2@') KbName('3#') KbName('4$') KbName('5%') KbName('q')];
 
 %% PARAMETERS 
 
