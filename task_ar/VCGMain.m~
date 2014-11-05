@@ -21,9 +21,10 @@ if retina
 end
 
 % valid keys 
-Keys = [KbName('1!')  KbName('2@') KbName('3#') KbName('4$') KbName('5%') KbName('q')];
+KeysConf = [KbName('1!')  KbName('2@') KbName('3#') KbName('4$') KbName('5%') KbName('q')];
+KeysAns = [KbName('1!')  KbName('2@') KbName('q')];
 
-%% PARAMETERS 
+% PARAMETERS 
 
 % ------- QUIZ ------- %
 
@@ -38,6 +39,9 @@ ParmsQ.NQuestions = 30;   % number of questions
 ParmsQ.Instructions = 1;
 
 % Timing 
+AnsTimeout = 5;
+ConfTimeout = 5;
+
 ParmsQ.Timeout = 2.5;          
 ParmsQ.OutcomeTime = 1;        
 ParmsQ.StimTime = 0.5;
@@ -62,7 +66,7 @@ ParmsQ.ISI = 0.3;
 % ParmsT.ITI = 1.5;
 % ParmsT.ISI = 0.3; 
 
-%% Run experiments
+% RUN EXPERIMENTS
 
 % get input from experimenter -- subject number and routine combination
 SubjectNum = input('Please enter subject number: ');
@@ -118,77 +122,100 @@ end
 
 function [] = QuizInstructions(windowmain,Parms)
         
-tstring = sprintf('You will be taking a quiz asking you to compare the areas and populations of countries.\n The first half of the quiz will focus on areas; the second half on populations.\n\n\n Press any key to continue.');
+tstring = sprintf('You will be taking a quiz asking you to \n compare the areas and populations of countries.\n The first half of the quiz will focus on areas;\n the second half on populations.\n\n\n Press any key to continue.');
 DrawFormattedText(windowmain,tstring,'center','center',[255 255 255],70);
 Screen('Flip',windowmain);
 KbWait(-1); 
 WaitSecs(0.5);        
-tstring = sprintf('For each question, the names of two countries will appear on the computer screen.\n One of them will have a one next to it, the other a two.\n You will be speaking the number corresponding the country you believe has the larger area/population.\n Do not say anything other than ?one? or ?two?, including ?um? or the names of the countries.\n\n\n Press any key to continue.');
+tstring = sprintf('For each question, the names of two countries\n will appear on the computer screen.\n One of them will have a one \nnext to it, the other a two.\n You will be speaking the number corresponding the country\n you believe has the larger area/population.\n Do not say anything other than "one" or "two",\n including "um" or the names of the countries.\n\n\n Press any key to continue.');
 DrawFormattedText(windowmain,tstring,'center','center',[255 255 255],70);
 Screen('Flip',windowmain);
 KbWait(-1); 
 WaitSecs(0.5);
-tstring = sprintf('Take the time you need to choose your answer, but do answer as soon as you can.\n After speaking your answer, you will hit any key on the keyboard \n and then be asked to enter your answer numerically as well.\n\n\n Press any key to continue.');
+tstring = sprintf('Take the time you need to choose your answer,\n but do answer as soon as you can.\n After speaking your answer, you will hit any key on the keyboard \n and then be asked to enter your answer numerically as well.\n\n\n Press any key to continue.');
 DrawFormattedText(windowmain,tstring,'center','center',[255 255 255],70);
 Screen('Flip',windowmain);
 KbWait(-1);
 WaitSecs(0.5);
-tstring = sprintf('Once you have answered the question, you will be asked to place a bet on your answer.\n The value of your bet will range from one to five (so one, two, three, four, or five).\n You should bet high when you are confident of your answer, low when you are not.\n So a five would correspond to near-certainty, and a one to pure guessing.\n\n\n Press any key to continue.');
+tstring = sprintf('Once you have answered the question,\n you will be asked to place a bet on your answer.\n The value of your bet will range \nfrom one to five (so one, two, three, four, or five).\n You should bet high when you are confident\n of your answer, low when you are not.\n So a five would correspond to near-certainty,\n and a one to pure guessing.\n\n\n Press any key to continue.');
 DrawFormattedText(windowmain,tstring,'center','center',[255 255 255],70);
 Screen('Flip',windowmain);
 KbWait(-1);
 WaitSecs(0.5);
-tstring = sprintf('Later on, another person will be listening to your answers and also placing bets.\n For each correct answer, you will gain a number of points equal to the average bet that the two of you placed;\n for each incorrect answer, you will lose a number of points equal to the average bet.\n We will announce your score and the top performers later by email.\n\n\n Press any key to continue.');
+tstring = sprintf('Later on, another person will be listening\n to your answers and also placing bets.\n For each correct answer, you will gain a number of points\n equal to the average bet that the two of you placed;\n for each incorrect answer, you will lose\n a number of points equal to the average bet.\n We will announce your score and \nthe top performers later by email.\n\n\n Press any key to continue.');
 DrawFormattedText(windowmain,tstring,'center','center',[255 255 255],70);
 Screen('Flip',windowmain);
 KbWait(-1);
 WaitSecs(0.5);
-tstring = sprintf('You will answer 40 questions on area, then 40 questions on population.\n After every 20 questions, you will get a report on how well you are performing.\n\n\n Press any key to continue.');
+tstring = sprintf('You will answer 40 questions on area,\n then 40 questions on population.\n After every 20 questions, you will \n get a report on how well you are performing.\n\n\n Press any key to continue.');
 DrawFormattedText(windowmain,tstring,'center','center',[255 255 255],70);
 Screen('Flip',windowmain);
 KbWait(-1);
 WaitSecs(0.5);
-tstring = sprintf('To help get you familiar with the experiment,\n you will first go through a ?pre-quiz? involving just three questions of each type.\n Do you have any questions before we begin?\n\n\n Press any key to continue.');
+tstring = sprintf('To help get you familiar with the experiment,\n you will first go through a "pre-quiz"\n involving just three questions of each type.\n Do you have any questions before we begin?\n\n\n Press any key to continue.');
 DrawFormattedText(windowmain,tstring,'center','center',[255 255 255],70);
 Screen('Flip',windowmain);
 KbWait(-1);
 WaitSecs(0.5);
-
+% administer pre-quiz
+GivePreQuiz(3);
+tstring = sprintf('Great job!/n We will now start the real quiz./n Are you ready?\n\n\n Press any key to continue.');
+DrawFormattedText(windowmain,tstring,'center','center',[255 255 255],70);
+Screen('Flip',windowmain);
+KbWait(-1);
+WaitSecs(0.5);
 
 end
 
+function [answer,rt] = waitkey(Keys,timeout)
+% wait for a keypress in [Keys] for [timeout] seconds
 
-function [] = GiveQuiz()
+Pressed = 0;
+stimon = GetSecs;
+while ~Pressed && (GetSecs < (stimon + timeout)) % participant responded on time
+  [key, whenpress, keycode] = KbCheck(-1); % check all devices
+  if (key && sum(keycode(Keys))) % a valid key was pressed (we ignore invalid keys presses)
+    Pressed = 1;
+    KeyNum = find(keycode(Keys),1);
+  end
+end
+
+if Pressed  
+  if (KeyNum == 20) % the quit key was pressed -- get out of loop and close screen
     
-%% administer prequiz
-GivePreQuiz(3); clc;
-disp('Great job! We will now start the real quiz. Are you ready?')
-pause
-disp(' ')
+    % do some stuff here, e.g. save data
+    save(sprintf('dataQ/Subj%d_%d-%d-%d_%d-%d-%d-quit-Q.mat',SubjectNum,tSave),'DataQ','ParmsQ');
 
-%% administer pop quiz
-GivePopQuiz(subjID); clc;
-disp('Finished with population questions! Ready for the area quiz?')
-pause
-disp(' ')
+    % close up
+    Screen('CloseAll');
+    ListenChar(0);
+    Priority(0);
+    ShowCursor;
+    return
 
-%% administer area quiz
-GiveAreaQuiz(subjID); clc;
-disp('Phew! Done with the difficult questions. Just a little more info before you go...')
-pause
-disp(' ')
+  else % a valid key was pressed 
 
-%% subject survey
-SurveySubject(subjID);
+    % audio data for trial needs to be saved here
 
-%% calculate scores
-% CalcScores(subjID);
-disp(' ')
-disp('Finished!')
-disp(' ')
+    rt = whenpress - stimon; 
+    answer = KeyNum;
+
+    outcomeon = Screen('Flip',windowmain,stimon+rt);
+
+  end
+
+else % nothing was pressed     
+
+  Screen('DrawTexture',windowmain,Stim.Slow,[],[]); % show "too slow" -- can change this to write some text
+  Screen('Flip',windowmain);   
 
 end
-    
+
+WaitSecs(outcometime);
+Screen('Flip',windowmain);
+
+end
+
 function [] = GivePreQuiz(Nrep)
 % Delivers a prequiz on populations/area of countries to prepare subjects
 % for the real experiment.
@@ -206,23 +233,35 @@ function [] = GivePreQuiz(Nrep)
 load('data/quiz.mat');
 
 % administer pop prequiz
-disp(' ')
-disp('POPULATION PREQUIZ')
-disp(' ')
+tstring = sprintf('POPULATION PRE-QUIZ \n\n\n Press any key to continue.');
+DrawFormattedText(windowmain,tstring,'center','center',[255 255 255],70);
+Screen('Flip',windowmain);
+KbWait(-1);
+WaitSecs(0.5);
 feedback = zeros(Nrep,1);
 for n = 1:Nrep
-  clc
   N = length(SubSampedCountry);
   tmp = randperm(N,2);
   x1 = tmp(1);
   x2 = tmp(2); clear N tmp;
-  disp('Larger population:')
-  disp(['1: ',SubSampedCountry{x1}])
-  disp('OR')
-  disp(['2: ',SubSampedCountry{x2}])
-  disp('?')
-  answer = input('Choose 1 or 2 by speaking: ');
-    % @(x) (x==1)||(x==2));
+  % display prompt for spoken asnwer
+  tstring = sprintf(['Which has the larger population? /n 1: ',SubSampedCountry{x1},'/n 2: ',SubSampedCountry{x2}],'/n/n/n Speak your answer, then hit any key.');
+  DrawFormattedText(windowmain,tstring,'center','center',[255 255 255],70);
+  Screen('Flip',windowmain);
+  % would record here if real quiz
+  KbWait(-1);
+  WaitSecs(0.5);
+  tstring = sprintf('Now type your answer (1 or 2) using the keyboard, and hit enter.');
+  DrawFormattedText(windowmain,tstring,'center','center',[255 255 255],70);
+  Screen('Flip',windowmain);
+  [answer,rt] = waitkey(KeysAns,AnsTimeout); clear rt;
+  WaitSecs(0.5);
+  tstring = sprintf('Now type your bet (1-5) using the keyboard, and hit enter.');
+  DrawFormattedText(windowmain,tstring,'center','center',[255 255 255],70);
+  Screen('Flip',windowmain);
+  conf = waitkey(KeysConf,ConfTimeout); clear conf;
+  WaitSecs(0.5);
+  
   if SubSampedPopulation(x1)>SubSampedPopulation(x2)
     key = 1;
   else
@@ -274,6 +313,31 @@ disp(sprintf('You answered %i of the last %i questions correctly.',sum(feedback)
 disp('Press any key to continue with the quiz.')
 pause
 clear feedback;
+
+end
+
+function [] = GiveQuiz()
+
+% administer pop quiz
+GivePopQuiz(subjID); clc;
+disp('Finished with population questions! Ready for the area quiz?')
+pause
+disp(' ')
+
+% administer area quiz
+GiveAreaQuiz(subjID); clc;
+disp('Phew! Done with the difficult questions. Just a little more info before you go...')
+pause
+disp(' ')
+
+% subject survey
+SurveySubject(subjID);
+
+% calculate scores
+% CalcScores(subjID);
+disp(' ')
+disp('Finished!')
+disp(' ')
 
 end
 
